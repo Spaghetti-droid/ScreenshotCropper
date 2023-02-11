@@ -478,3 +478,5 @@ Temporary Items
 # add your custom gitignore here:
 !.gitignore
 !.gitsubmodules
+Screenshots/
+src/fun/gbr/test/
