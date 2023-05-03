@@ -16,6 +16,8 @@ import fun.gbr.io.Writer;
  * - Find better way to delay clipboard check on lost ownership
  * - Log to file
  * - Have constants in own class
+ * - Change naming style to date-number
+ * - Take command line args
  * 
  * Launches the program in command line mode
  */
@@ -29,7 +31,7 @@ public class Launcher {
 			Writer writer = new Writer(DEFAULT_PATH);
 			Cropper cropper = new Cropper(DEFAULT_X_OFFSET, DEFAULT_Y_OFFSET, DEFAULT_WIDTH, DEFAULT_HEIGHT);
 			ShotEventHandler handler = new ShotEventHandler(cropper, writer);
-			System.out.println("Ready to start listening. Type anything to start, type again to stop");
+			System.out.println("Ready to start listening. Enter to start, enter again to stop");
 			scanner.nextLine();
 			// start event listening
 			handler.startListening();
