@@ -8,14 +8,18 @@ import fun.gbr.options.Options;
 
 public class ArgParser {
 	
+	/** Reads input arguments sets them into the appropriate objects and settings
+	 * @param args
+	 * @return Record of containing parsing result
+	 */
 	public static ParsedArgs parseArgs(String[] args){
 		
 		try {			
 			Options options = new Options();
-			boolean save = true;
+			boolean saveOptions = true;
 			int i=0;
 			// reset is only done if it is the first argument 
-			if("--reset".equals(args[0])) {
+			if(args.length > 0 && "--reset".equals(args[0])) {
 				options.reset();
 				i++;
 			}
@@ -39,7 +43,7 @@ public class ArgParser {
 				case "-h":
 					return displayHelpAndQuit();
 				case "-f":
-					save = false;
+					saveOptions = false;
 					break;
 				default:
 					final String arg = args[i];
@@ -49,7 +53,7 @@ public class ArgParser {
 				++i;
 			}
 
-			return new ParsedArgs(options, false, save);
+			return new ParsedArgs(options, false, saveOptions);
 
 		} catch (Exception e) {
 			Logger.getLogger(ArgParser.class.getCanonicalName()).log(Level.SEVERE, e, () -> "Error parsing arguments!");
@@ -70,16 +74,16 @@ public class ArgParser {
 				Options:
 					Note that all values set below are saved to the user's preferences
 					-h: Display this message and quit. Disregard any other options.
-					-f: Forget; Do not save option changes 
-					-p: Specify the path to the screenshot folder to use. Defaults to ./Screenshots.
-					-x: The offset from which to crop in the x direction. Defaults to 0.
-					-y: The offset from which to crop in the y direction. Defaults to 0.
-					-W: The width to crop. Defaults to 1920.
-					-H: The height to crop. Defaults to 1080.
+					-f: Forget; Do not save option changes. Without this option, all specified options are saved and become the new defaults. 
+					-p: Specify the path to the screenshot folder to use. Defaults to saved preference or ./Screenshots.
+					-x: The offset from which to crop in the x direction. Defaults to saved preference or 0.
+					-y: The offset from which to crop in the y direction. Defaults to saved preference or 0.
+					-W: The width to crop. Defaults to saved preference or 1920.
+					-H: The height to crop. Defaults to saved preference or 1080.
 					--reset: Resets saved options to defaults. ONLY VALID IF IT IS THE FIRST OPTION SPECIFIED!
 				""");
 		return new ParsedArgs(null, true, false);
 	}
 	
-	public static record ParsedArgs(Options options, boolean exitNow, boolean shouldSave) {}	
+	public static record ParsedArgs(Options options, boolean exitNow, boolean saveOptions) {}	
 }

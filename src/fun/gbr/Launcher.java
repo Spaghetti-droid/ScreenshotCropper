@@ -16,9 +16,6 @@ import fun.gbr.options.Options;
  * - GUI
  * - Find better way to delay clipboard check on lost ownership
  * - Log to file
- * - Have constants in own class
- * - Change naming style to date-number
- * - Take command line args
  * 
  * Launches the program in command line mode
  */
@@ -36,8 +33,10 @@ public class Launcher {
 			// Initialise
 			
 			Options options = parsed.options();
-			if(parsed.shouldSave()) {
+			System.out.println("Using " + options);
+			if(parsed.saveOptions()) {
 				options.save();
+				System.out.println("Options saved for current user");
 			}
 			
 			Writer writer = new Writer(options.getPath());

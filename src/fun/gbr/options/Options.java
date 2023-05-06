@@ -97,6 +97,12 @@ public class Options {
 		this.height = height;
 	}
 	
+	@Override
+	public String toString() {
+		return "Options [Screenshot path=" + path + ", x Offset=" + xOffset + ", y Offset=" + yOffset
+				+ ", Crop width=" + width + ", Crop height=" + height + "]";
+	}
+
 	private static final String PATH_KEY = "PATH";
 	private static final String X_OFFSET_KEY = "X_OFFSET";
 	private static final String Y_OFFSET_KEY = "Y_OFFSET";
