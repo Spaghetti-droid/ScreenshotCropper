@@ -24,6 +24,15 @@ public class Launcher {
 
 	public static void main(String[] args) {
 		
+		// Launcher expects user input from the command line. So stop execution if there is no command line.
+		if(System.console() == null) {
+			// Unlikely to be seen in current setup, but might be useful if we ever log to file
+			Logger.getLogger(Launcher.class.getCanonicalName()).severe("No console detected!");
+			return;
+		}
+		
+		// Parse command line arguments
+		
 		ParsedArgs parsed = ArgParser.parseArgs(args);
 		if(parsed.exitNow()) {
 			return;
@@ -43,12 +52,12 @@ public class Launcher {
 			Writer writer = new Writer(options.getPath());
 			Cropper cropper = new Cropper(options.getXOffset(), options.getYOffset(), options.getWidth(), options.getHeight());
 			ShotEventHandler handler = new ShotEventHandler(cropper, writer);
-			System.out.println("Ready to start listening. Enter to start, enter again to stop");
-			scanner.nextLine();
 			
 			// start event listening
 			
 			handler.startListening();
+			
+			System.out.println("Listening for screenshots. Press enter to stop.");
 			scanner.nextLine();
 			
 			// stop listening
