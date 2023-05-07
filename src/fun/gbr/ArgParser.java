@@ -16,7 +16,7 @@ public class ArgParser {
 		
 		try {			
 			Options options = new Options();
-			boolean saveOptions = true;
+			boolean saveOptions = false;
 			int i=0;
 			// reset is only done if it is the first argument 
 			if(args.length > 0 && "--reset".equals(args[0])) {
@@ -42,8 +42,8 @@ public class ArgParser {
 					break;
 				case "-h":
 					return displayHelpAndQuit();
-				case "-f":
-					saveOptions = false;
+				case "-s":
+					saveOptions = true;
 					break;
 				default:
 					final String arg = args[i];
@@ -74,7 +74,7 @@ public class ArgParser {
 				Options:
 					Note that all values set below are saved to the user's preferences
 					-h: Display this message and quit. Disregard any other options.
-					-f: Forget; Do not save option changes. Without this option, all specified options are saved and become the new defaults. 
+					-s: Save; Save option changes to user preferences, to be used as new defaults.
 					-p: Specify the path to the screenshot folder to use. Defaults to saved preference or ./Screenshots.
 					-x: The offset from which to crop in the x direction. Defaults to saved preference or 0.
 					-y: The offset from which to crop in the y direction. Defaults to saved preference or 0.

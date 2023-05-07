@@ -16,6 +16,7 @@ import fun.gbr.options.Options;
  * - GUI
  * - Find better way to delay clipboard check on lost ownership
  * - Log to file
+ * - Make screen autodetection function and give option to choose a screen
  * 
  * Launches the program in command line mode
  */
