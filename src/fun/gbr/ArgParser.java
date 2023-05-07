@@ -24,52 +24,84 @@ public class ArgParser {
 				i++;
 			}
 			while(i<args.length) {
-				switch(args[i]) {
-				case "-p":
-					options.setPath(Path.of(args[++i]));
-					break;
-				case "-x":
-					options.setXOffset(Integer.valueOf(args[++i]));
-					break;
-				case "-y":
-					options.setYOffset(Integer.valueOf(args[++i]));
-					break;
-				case "-W":
-					options.setWidth(Integer.valueOf(args[++i]));
-					break;
-				case "-H":
-					options.setHeight(Integer.valueOf(args[++i]));
-					break;
-				case "-h":
-					return displayHelpAndQuit();
-				case "-s":
-					saveOptions = true;
-					break;
-				default:
-					final String arg = args[i];
-					Logger.getLogger(ArgParser.class.getCanonicalName()).warning(()-> "Invalid argument: " + arg);
-					return displayHelpAndQuit();
+				String arg = args[i];
+				if(arg.startsWith("-")) {
+					arg = arg.substring(1);
+				} else {
+					// There are no positional arguments
+					throw new IllegalArgumentException("Unrecognised argument: " + arg);
 				}
+				// valueUsed indicates if args[i+1] has already been used as a value
+				Character valueUser = null;
+				for(int j=0; j<arg.length(); j++) {
+					char c = arg.charAt(j);
+					switch(c) {
+					case 'p':
+						valueUser = requireValueNotUsed(valueUser, c, arg);
+						options.setPath(Path.of(args[++i]));
+						break;
+					case 'x':
+						valueUser = requireValueNotUsed(valueUser, c, arg);
+						options.setXOffset(Integer.valueOf(args[++i]));
+						break;
+					case 'y':
+						valueUser = requireValueNotUsed(valueUser, c, arg);
+						options.setYOffset(Integer.valueOf(args[++i]));
+						break;
+					case 'W':
+						valueUser = requireValueNotUsed(valueUser, c, arg);
+						options.setWidth(Integer.valueOf(args[++i]));
+						break;
+					case 'H':
+						valueUser = requireValueNotUsed(valueUser, c, arg);
+						options.setHeight(Integer.valueOf(args[++i]));
+						break;
+					case 'h':
+						return displayHelpAndQuit();
+					case 's':
+						saveOptions = true;
+						break;
+					default:
+						final String badArg = args[i];
+						Logger.getLogger(ArgParser.class.getCanonicalName()).warning(() -> "Invalid argument: " + badArg);
+						return displayHelpAndQuit();
+					}
+				}
+				
 				++i;
 			}
 
 			return new ParsedArgs(options, false, saveOptions);
 
+		} catch (@SuppressWarnings("unused") ArrayIndexOutOfBoundsException ae) {
+			Logger.getLogger(ArgParser.class.getCanonicalName()).log(Level.SEVERE, () -> "Argument '" + args[args.length-1] + "' requires a value!");
+			return displayHelpAndQuit();
 		} catch (Exception e) {
 			Logger.getLogger(ArgParser.class.getCanonicalName()).log(Level.SEVERE, e, () -> "Error parsing arguments!");
 			return displayHelpAndQuit();
 		}
+	}	
+	
+	/** Check that option in argument is not already using next argument as value
+	 * @param valueUser 	char that should be null
+	 * @param newValueUser	option that needs args[i+1] as a value
+	 * @param arg			Currently parsed argument (without - prefix) for error reporting
+	 * @throws IllegalArgumentException if valueUsed is true
+	 * @return true
+	 */
+	private static char requireValueNotUsed(Character valueUser, char newValueUser, String arg) {
+		if(valueUser != null) {
+			throw new IllegalArgumentException("Option '" + valueUser + "' supplied in '-" + arg + "' requires a value!");
+		}
+		return newValueUser;
 	}
-	
-	
-	
 	
 	/** Prints the apps help message
 	 * @return ParsedArgs indicating that program should quit
 	 */
 	private static ParsedArgs displayHelpAndQuit() {
 		System.out.println("""
-				Usage <cropper> [--reset] [-h] [-f] [-p PATH] [-x X_OFFSET] [-y Y_OFFSET] [-W WIDTH] [-H HEIGHT] [-o PATH]
+				Usage <cropper> [--reset] [-h] [-s] [-p PATH] [-x X_OFFSET] [-y Y_OFFSET] [-W WIDTH] [-H HEIGHT]
 				
 				Options:
 					Note that all values set below are saved to the user's preferences
