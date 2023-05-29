@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -78,6 +79,10 @@ public class Writer {
 		Path scPath = getNextSCPath(0);
 		if(ImageIO.write(image, "png", scPath.toFile())){
 			nextScreenshotIdx++;
+			String confirmation = scPath.getFileName() + " saved!";
+			System.out.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/uu HH:mm:ss")) 
+					+ " - " + confirmation);
+			Logger.getLogger(this.getClass().getCanonicalName()).warning(confirmation);
 		} else {
 			Logger.getLogger(this.getClass().getCanonicalName()).log(Level.SEVERE, () -> "ImageIO failed to write to " + scPath.getFileName() + "!");
 		}

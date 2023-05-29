@@ -17,6 +17,7 @@ public class ArgParser {
 		try {			
 			Options options = new Options();
 			boolean saveOptions = false;
+			Level logLevel = Level.SEVERE;
 			int i=0;
 			// reset is only done if it is the first argument 
 			if(args.length > 0 && "--reset".equals(args[0])) {
@@ -25,11 +26,20 @@ public class ArgParser {
 			}
 			while(i<args.length) {
 				String arg = args[i];
+				if(arg == "--log-level") {
+					try {
+						logLevel = Level.parse(args[++i]);
+					} catch(Exception e) {
+						final String badArg = args[i];
+						Logger.getLogger(ArgParser.class.getCanonicalName()).severe(() -> "Invalid log level: " + badArg);
+						return displayHelpAndQuit();
+					}
+				}
 				if(arg.startsWith("-")) {
 					arg = arg.substring(1);
 				} else {
 					// There are no positional arguments
-					throw new IllegalArgumentException("Unrecognised argument: " + arg);
+					return handleBadArgument(arg);
 				}
 				// valueUsed indicates if args[i+1] has already been used as a value
 				Character valueUser = null;
@@ -62,16 +72,14 @@ public class ArgParser {
 						saveOptions = true;
 						break;
 					default:
-						final String badArg = args[i];
-						Logger.getLogger(ArgParser.class.getCanonicalName()).warning(() -> "Invalid argument: " + badArg);
-						return displayHelpAndQuit();
+						return handleBadArgument(arg);
 					}
 				}
 				
 				++i;
 			}
 
-			return new ParsedArgs(options, false, saveOptions);
+			return new ParsedArgs(options, false, saveOptions, logLevel);
 
 		} catch (@SuppressWarnings("unused") ArrayIndexOutOfBoundsException ae) {
 			Logger.getLogger(ArgParser.class.getCanonicalName()).log(Level.SEVERE, () -> "Argument '" + args[args.length-1] + "' requires a value!");
@@ -114,8 +122,17 @@ public class ArgParser {
 					-H: The height to crop. Defaults to saved preference or 1080.
 					--reset: Resets saved options to defaults. ONLY VALID IF IT IS THE FIRST OPTION SPECIFIED!
 				""");
-		return new ParsedArgs(null, true, false);
+		return new ParsedArgs(null, true, false, Level.WARNING);
 	}
 	
-	public static record ParsedArgs(Options options, boolean exitNow, boolean saveOptions) {}	
+	/** Logs bad argument, displays help and returns quit-signalling ParsedArgs
+	 * @param badArg
+	 * @return quit-signalling ParsedArgs
+	 */
+	private static ParsedArgs handleBadArgument(String badArg) {
+		Logger.getLogger(ArgParser.class.getCanonicalName()).severe(() -> "Invalid argument: " + badArg);
+		return displayHelpAndQuit();
+	}
+	
+	public static record ParsedArgs(Options options, boolean exitNow, boolean saveOptions, Level logLevel) {}	
 }

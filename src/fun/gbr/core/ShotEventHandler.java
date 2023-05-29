@@ -36,7 +36,7 @@ public class ShotEventHandler implements ClipboardOwner{
 	public void startListening() {
 		// Gain ownership of clipboard to force loss of ownership when screenshot is taken
 		this.clipboard.setContents(clipboard.getContents(this), this);
-		Logger.getLogger(this.getClass().getCanonicalName()).info("Started Listening");
+		Logger.getLogger(this.getClass().getCanonicalName()).warning("Started Listening");
 	}
 	
 	/** Check clipboard for image and crop it if it is there

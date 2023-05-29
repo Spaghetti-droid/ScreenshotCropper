@@ -13,7 +13,6 @@ import fun.gbr.options.Options;
 
 /**
  * TODO:
- * - GUI
  * - Find better way to delay clipboard check on lost ownership
  * - Log to file
  * - Make screen autodetection function and give option to choose a screen
@@ -23,12 +22,12 @@ import fun.gbr.options.Options;
 public class Launcher {
 
 	public static void main(String[] args) {
-		
+				
 		// Launcher expects user input from the command line. So stop execution if there is no command line.
 		if(System.console() == null) {
 			// Unlikely to be seen in current setup, but might be useful if we ever log to file
 			Logger.getLogger(Launcher.class.getCanonicalName()).severe("No console detected!");
-			return;
+			//return;
 		}
 		
 		// Parse command line arguments
@@ -37,6 +36,8 @@ public class Launcher {
 		if(parsed.exitNow()) {
 			return;
 		}
+		setLogLevel(parsed.logLevel());
+		
 		try(Scanner scanner = new Scanner(System.in)){			
 			System.out.println("Starting up...\n");
 			
@@ -57,14 +58,25 @@ public class Launcher {
 			
 			handler.startListening();
 			
-			System.out.println("Listening for screenshots. Press enter to stop.");
+			System.out.println("\nListening for screenshots. Press enter to stop.\n");
 			scanner.nextLine();
 			
 			// stop listening
 			
-			Logger.getLogger(Launcher.class.getCanonicalName()).info("Stopping listening");
+			Logger.getLogger(Launcher.class.getCanonicalName()).warning("Stopping listening");
 		} catch (IOException e) {
 			Logger.getLogger(Launcher.class.getCanonicalName()).log(Level.SEVERE, "Initialisation failed!", e);
+		}
+	}
+	
+	/** Set default log level for the program
+	 * @param level
+	 */
+	private static void setLogLevel(Level level) {
+		Logger rootLogger = Logger.getLogger("");
+		rootLogger.setLevel(level);
+		for(var hdl : rootLogger.getHandlers()) {
+			hdl.setLevel(level);
 		}
 	}
 }
