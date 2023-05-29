@@ -5,7 +5,8 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fun.gbr.ArgParser.ParsedArgs;
+import fun.gbr.argParsing.ArgParser;
+import fun.gbr.argParsing.ArgParser.ParsedArgs;
 import fun.gbr.core.Cropper;
 import fun.gbr.core.ShotEventHandler;
 import fun.gbr.io.Writer;
@@ -27,7 +28,7 @@ public class Launcher {
 		if(System.console() == null) {
 			// Unlikely to be seen in current setup, but might be useful if we ever log to file
 			Logger.getLogger(Launcher.class.getCanonicalName()).severe("No console detected!");
-			//return;
+			return;
 		}
 		
 		// Parse command line arguments
@@ -36,14 +37,14 @@ public class Launcher {
 		if(parsed.exitNow()) {
 			return;
 		}
-		setLogLevel(parsed.logLevel());
+		setLogLevel(parsed.getLogLevel());
 		
 		try(Scanner scanner = new Scanner(System.in)){			
 			System.out.println("Starting up...\n");
 			
 			// Initialise
 			
-			Options options = parsed.options();
+			Options options = parsed.getOptions();
 			System.out.println("Using " + options);
 			if(parsed.saveOptions()) {
 				options.save();
